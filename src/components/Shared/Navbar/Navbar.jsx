@@ -4,7 +4,8 @@ import { useState } from 'react'
 import { Link } from 'react-router'
 import useAuth from '../../../hooks/useAuth'
 import avatarImg from '../../../assets/images/placeholder.jpg'
-import logo from '../../../assets/images/logo-flat.png'
+// import logo from '../../../assets/images/logo-flat.png'
+import logo from "../../../../public/plant-logo-1.png"
 const Navbar = () => {
   const { user, logOut } = useAuth()
   const [isOpen, setIsOpen] = useState(false)
@@ -16,7 +17,7 @@ const Navbar = () => {
           <div className='flex flex-row  items-center justify-between gap-3 md:gap-0'>
             {/* Logo */}
             <Link to='/'>
-              <img src={logo} alt='logo' width='100' height='100' />
+              <img  src={logo} alt='logo' width='50' height='50' />
             </Link>
             {/* Dropdown Menu */}
             <div className='relative'>
@@ -35,7 +36,7 @@ const Navbar = () => {
                       src={user && user.photoURL ? user.photoURL : avatarImg}
                       alt='profile'
                       height='30'
-                      width='30'
+                      width='20'
                     />
                   </div>
                 </div>

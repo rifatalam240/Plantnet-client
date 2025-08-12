@@ -1,95 +1,127 @@
-import Container from '../../components/Shared/Container'
-import Heading from '../../components/Shared/Heading'
-import Button from '../../components/Shared/Button/Button'
-import PurchaseModal from '../../components/Modal/PurchaseModal'
-import { useState } from 'react'
+import Container from "../../components/Shared/Container";
+import Heading from "../../components/Shared/Heading";
+import Button from "../../components/Shared/Button/Button";
+import PurchaseModal from "../../components/Modal/PurchaseModal";
+import { useEffect, useState } from "react";
+import { useLoaderData, useParams } from "react-router";
+import axios from "axios";
+import useAuth from "../../hooks/useAuth";
 
 const PlantDetails = () => {
-  let [isOpen, setIsOpen] = useState(false)
+  let [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+  const [plant, setPlant] = useState(null);
+  const { id } = useParams();
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API}/show-plant/${id}`)
+      .then((response) => {
+        setPlant(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching plant data:", error);
+      });
+  }, [id]);
+  console.log("plan", plant);
 
   const closeModal = () => {
-    setIsOpen(false)
-  }
-
+    setIsOpen(false);
+  };
+  // const plantdetails = useLoaderData();
+  // console.log(plantdetails);
   return (
     <Container>
-      <div className='mx-auto flex flex-col lg:flex-row justify-between w-full gap-12'>
+      <div className="mx-auto flex flex-col lg:flex-row justify-between w-full gap-12">
         {/* Header */}
-        <div className='flex flex-col gap-6 flex-1'>
+        <div className="flex flex-col gap-6 flex-1">
           <div>
-            <div className='w-full overflow-hidden rounded-xl'>
+            <div className="w-full overflow-hidden rounded-xl">
               <img
-                className='object-cover w-full'
-                src='https://i.ibb.co/DDnw6j9/1738597899-golden-money-plant.jpg'
-                alt='header image'
+                className="object-cover w-full"
+                src={
+                  plant?.image ||
+                  "https://i.ibb.co/DDnw6j9/1738597899-golden-money-plant.jpg"
+                }
+                alt="header image"
               />
             </div>
           </div>
         </div>
-        <div className='md:gap-10 flex-1'>
+        <div className="md:gap-10 flex-1">
           {/* Plant Info */}
           <Heading
-            title={'Money Plant'}
-            subtitle={`Category: ${'Succulent'}`}
+            title={"Money Plant"}
+            subtitle={`Category: ${plant?.category || "Unknown"}`}
           />
-          <hr className='my-6' />
+          <hr className="my-6" />
           <div
-            className='
-          text-lg font-light text-neutral-500'
+            className="
+          text-lg font-light text-neutral-500"
           >
-            Professionally deliver sticky testing procedures for next-generation
-            portals. Objectively communicate just in time infrastructures
-            before.
+            {plant?.description || "No description available for this plant."}
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
 
           <div
-            className='
+            className="
                 text-xl 
                 font-semibold 
                 flex 
                 flex-row 
                 items-center
                 gap-2
-              '
+              "
           >
-            <div>Seller: Shakil Ahmed Atik</div>
+            <div>Seller:{plant?.sellername || "Muhammad Rifat"} </div>
 
             <img
-              className='rounded-full'
-              height='30'
-              width='30'
-              alt='Avatar'
-              referrerPolicy='no-referrer'
-              src='https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c'
+              className="rounded-full"
+              height="30"
+              width="30"
+              alt="Avatar"
+              referrerPolicy="no-referrer"
+              src={
+                plant?.sellerimage ||
+                "https://lh3.googleusercontent.com/a/ACg8ocKUMU3XIX-JSUB80Gj_bYIWfYudpibgdwZE1xqmAGxHASgdvCZZ=s96-c"
+              }
             />
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
           <div>
             <p
-              className='
+              className="
                 gap-4 
                 font-light
                 text-neutral-500
-              '
+              "
             >
-              Quantity: 10 Units Left Only!
+              Quantity:{plant?.quantity || "N/A"} <br />
             </p>
           </div>
-          <hr className='my-6' />
-          <div className='flex justify-between'>
-            <p className='font-bold text-3xl text-gray-500'>Price: 10$</p>
+          <hr className="my-6" />
+          <div className="flex justify-between">
+            <p className="font-bold text-3xl text-gray-500">
+              Price: {plant?.price}$
+            </p>
             <div>
-              <Button onClick={() => setIsOpen(true)} label='Purchase' />
+              <Button
+              disabled={!user}
+                onClick={() => setIsOpen(true)}
+                label={user ? "Purchase" : "Login to purchase"}
+              />
             </div>
           </div>
-          <hr className='my-6' />
+          <hr className="my-6" />
 
-          <PurchaseModal closeModal={closeModal} isOpen={isOpen} />
+          <PurchaseModal
+            plant={plant}
+            closeModal={closeModal}
+            isOpen={isOpen}
+          />
         </div>
       </div>
     </Container>
-  )
-}
+  );
+};
 
-export default PlantDetails
+export default PlantDetails;

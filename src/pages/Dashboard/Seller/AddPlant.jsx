@@ -2,8 +2,10 @@ import axios from "axios";
 import { uploadImage } from "../../../api/spilts";
 import AddPlantForm from "../../../components/Form/AddPlantForm";
 import Swal from "sweetalert2";
+import useAuth from "../../../hooks/useAuth";
 
 const AddPlant = () => {
+  const { user } = useAuth();
   const handleupload = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -12,13 +14,16 @@ const AddPlant = () => {
     const image = form?.image?.files[0];
     const imageurl = await uploadImage(image);
     data.image = imageurl;
+    data.sellername = user?.displayName;
+    data.selleremail = user?.email;
+    data.sellerimage = user?.photoURL;
     data.createdAt = new Date().toISOString();
     // console.log("data", data);
     const response = await axios.post(
       `${import.meta.env.VITE_API}/add-plant`,
       data
     );
-    console.log("re",response.data.success)
+    console.log("re", response.data.success);
     if (response?.data?.success) {
       Swal.fire({
         icon: "success",
